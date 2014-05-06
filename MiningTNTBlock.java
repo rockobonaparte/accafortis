@@ -5,8 +5,10 @@ package miningexplosives;
 // Their obsidian TNT source was particularly useful. 
 
 import net.minecraft.block.Block;
+import net.minecraft.block.BlockTNT;
 import net.minecraft.block.material.Material;
 import net.minecraft.client.renderer.texture.IconRegister;
+import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.projectile.EntityArrow;
@@ -14,15 +16,25 @@ import net.minecraft.item.Item;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.Icon;
 import net.minecraft.world.Explosion;
+import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
 public class MiningTNTBlock extends Block
 {
+	@SideOnly(Side.CLIENT)
+	private Icon topIcon;
+	
+	@SideOnly(Side.CLIENT)
+	private Icon bottomIcon;
+	
 	public MiningTNTBlock(int id)
 	{
 		super(id, Material.tnt);
+        this.setCreativeTab(CreativeTabs.tabRedstone);
+        
+//		this.textureName = "tnt";
 	}
 
 	@Override
@@ -117,7 +129,28 @@ public class MiningTNTBlock extends Block
 	{
 		return -1;
 	}
+	
+	@Override
+    public Icon getIcon(int par1, int par2)
+    {
+        return par1 == 0 ? this.bottomIcon : (par1 == 1 ? this.topIcon : this.blockIcon);
+        
+    }
 
+    public Icon getBlockTexture(IBlockAccess par1IBlockAccess, int par2, int par3, int par4, int par5)
+    {
+        return this.getIcon(par5, par1IBlockAccess.getBlockMetadata(par2, par3, par4));
+    }
+	
+	
+    public void registerIcons(IconRegister par1IconRegister)
+    {
+        this.blockIcon = par1IconRegister.registerIcon("tnt_side");
+        this.topIcon = par1IconRegister.registerIcon("tnt_top");
+        this.bottomIcon = par1IconRegister.registerIcon("tnt_bottom");
+    }	
+	
+	
 	@Override
 	public void onEntityCollidedWithBlock(World world, int x, int y, int z, Entity entity)
 	{
