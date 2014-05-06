@@ -27,7 +27,7 @@ public class MiningTNT
     public static MiningTNT instance;
 	public static int miningTNTID;
 
-	public static Block MiningTNTBlock;
+	public static Block miningTNTBlock;
         
 	@SidedProxy(clientSide = "miningexplosives.MiningTNTCommonProxy", serverSide = "miningexplosives.MiningTNTCommonProxy")
     public static MiningTNTCommonProxy proxy;
@@ -35,20 +35,22 @@ public class MiningTNT
     @EventHandler
     public void preInit(FMLPreInitializationEvent event)
     {
-    }
-
-    @EventHandler
-    public void init(FMLInitializationEvent event)
-    {
-    	MiningTNTBlock = new MiningTNTBlock(miningTNTID).setUnlocalizedName("MiningTNT");
-		GameRegistry.registerBlock(MiningTNTBlock, "MiningTNT");
+    	proxy.loadConfiguration();
+    	
+    	miningTNTBlock = new MiningTNTBlock(miningTNTID).setUnlocalizedName("MiningTNT");
+		GameRegistry.registerBlock(miningTNTBlock, "MiningTNT");
     	  
 		//Registrations
 		EntityRegistry.registerModEntity(MiningTNTEntity.class, "MiningTNT", EntityRegistry.findGlobalUniqueEntityId(), this, 40, 5, true);
 
 		// Recipes
-		CraftingManager.getInstance().addRecipe(new ItemStack(MiningTNTBlock, 1), 
+		CraftingManager.getInstance().addRecipe(new ItemStack(miningTNTBlock, 1), 
 			new Object[] { "sgs", "gpg", "sgs", 's', Block.sand, 'g', Item.gunpowder, 'p', Item.paper });
+    }
+
+    @EventHandler
+    public void init(FMLInitializationEvent event)
+    {
 
     }
 

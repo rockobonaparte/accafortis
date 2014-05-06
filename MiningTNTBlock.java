@@ -20,16 +20,10 @@ import cpw.mods.fml.relauncher.SideOnly;
 
 public class MiningTNTBlock extends Block
 {
-	public Icon[] icons = new Icon[256];
-
 	public MiningTNTBlock(int id)
 	{
 		super(id, Material.tnt);
 	}
-
-	@Override
-	@SideOnly(Side.CLIENT)
-	public void registerIcons(IconRegister register) {}
 
 	@Override
 	public void onBlockAdded(World world, int x, int y, int z)
