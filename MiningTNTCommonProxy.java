@@ -33,7 +33,6 @@ public class MiningTNTCommonProxy {
 	 */
 	public void registerSpecialTileEntities()
 	{
-		GameRegistry.registerTileEntity(MiningTNTTileEntity.class, "MiningTNT");
 	}
 
 	/**
@@ -80,6 +79,7 @@ public class MiningTNTCommonProxy {
 	 */
 	public void loadConfiguration()
 	{
+		// TODO: Use an actual configuration system for block IDs, instead of a hardcoded one.
 		MiningTNT.miningTNTID = 1337;
 	}
 
