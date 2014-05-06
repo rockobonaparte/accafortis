@@ -42,12 +42,9 @@ public class MiningTNT
     {
     	MiningTNTBlock = new MiningTNTBlock(miningTNTID).setUnlocalizedName("MiningTNT");
 		GameRegistry.registerBlock(MiningTNTBlock, "MiningTNT");
-    	    	
-		//Entity IDs
-		EntityRegistry.registerGlobalEntityID(MiningTNTEntity.class, "MiningTNT", EntityRegistry.findGlobalUniqueEntityId());
-		
+    	  
 		//Registrations
-		EntityRegistry.registerModEntity(MiningTNTEntity.class, "MiningTNT", 0, this, 40, 5, true);
+		EntityRegistry.registerModEntity(MiningTNTEntity.class, "MiningTNT", EntityRegistry.findGlobalUniqueEntityId(), this, 40, 5, true);
 
 		// Recipes
 		CraftingManager.getInstance().addRecipe(new ItemStack(MiningTNTBlock, 1), 

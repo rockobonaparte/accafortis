@@ -34,7 +34,7 @@ public class MiningTNTExplosion extends Explosion
     /** whether or not this explosion spawns smoke particles */
     public boolean isSmoking = true;
     private int field_77289_h = 16;
-    private Random explosionRNG = new Random();
+    private Random explosionRNG = null;
     private World worldObj;
     public double explosionX;
     public double explosionY;
@@ -49,12 +49,13 @@ public class MiningTNTExplosion extends Explosion
     public MiningTNTExplosion(World par1World, Entity par2Entity, double par3, double par5, double par7, float par9)
     {
     	super(par1World, par2Entity, par3, par5, par7, par9);
-        this.worldObj = par1World;
-        this.exploder = par2Entity;
-        this.explosionSize = par9;
-        this.explosionX = par3;
-        this.explosionY = par5;
-        this.explosionZ = par7;
+        worldObj = par1World;
+        exploder = par2Entity;
+        explosionSize = par9;
+        explosionX = par3;
+        explosionY = par5;
+        explosionZ = par7;
+        explosionRNG = worldObj.rand;
     }
 
     /**

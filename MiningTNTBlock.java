@@ -100,6 +100,12 @@ public class MiningTNTBlock extends Block
 		return false;
 	}
 
+//	@Override
+//	public TileEntity createTileEntity(World world, int metadata)
+//	{
+//		return new MiningTNTTileEntity();
+//	}
+
 	@Override
 	public boolean renderAsNormalBlock()
 	{
