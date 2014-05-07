@@ -94,60 +94,64 @@ public class MiningTNTBlock extends Block
 		}
 	}
 
-	@Override
-	public boolean canDropFromExplosion(Explosion explosion)
-	{
-		return false;
-	}
-
-	@Override
-	public boolean hasTileEntity(int metadata)
-	{
-		return false;
-	}
-
 //	@Override
-//	public TileEntity createTileEntity(World world, int metadata)
+//	public boolean canDropFromExplosion(Explosion explosion)
 //	{
-//		return new MiningTNTTileEntity();
+//		return false;
 //	}
-
-	@Override
-	public boolean renderAsNormalBlock()
-	{
-		return false;
-	}
-
-	@Override
-	public boolean isOpaqueCube()
-	{
-		return false;
-	}
-
-	@Override
-	public int getRenderType()
-	{
-		return -1;
-	}
+//
+//	@Override
+//	public boolean hasTileEntity(int metadata)
+//	{
+//		return false;
+//	}
+//
+//	@Override
+//	public boolean renderAsNormalBlock()
+//	{
+//		return false;
+//	}
+//
+//	@Override
+//	public boolean isOpaqueCube()
+//	{
+//		return false;
+//	}
+//
+//	@Override
+//	public int getRenderType()
+//	{
+//		return -1;
+//	}
 	
 	@Override
-    public Icon getIcon(int par1, int par2)
+    public Icon getIcon(int side, int metadata)
     {
-        return par1 == 0 ? this.bottomIcon : (par1 == 1 ? this.topIcon : this.blockIcon);
-        
+		if(side == 0)
+		{
+			return this.blockIcon;			
+		}
+		else if(side == 1)
+		{
+			return this.bottomIcon;			
+		}
+		else
+		{
+			return this.blockIcon;
+		}
     }
 
-    public Icon getBlockTexture(IBlockAccess par1IBlockAccess, int par2, int par3, int par4, int par5)
-    {
-        return this.getIcon(par5, par1IBlockAccess.getBlockMetadata(par2, par3, par4));
-    }
+//    public Icon getBlockTexture(IBlockAccess par1IBlockAccess, int par2, int par3, int par4, int par5)
+//    {
+//        return this.getIcon(par5, par1IBlockAccess.getBlockMetadata(par2, par3, par4));
+//    }
 	
 	
     public void registerIcons(IconRegister par1IconRegister)
     {
-        this.blockIcon = par1IconRegister.registerIcon("tnt_side");
-        this.topIcon = par1IconRegister.registerIcon("tnt_top");
-        this.bottomIcon = par1IconRegister.registerIcon("tnt_bottom");
+    	this.blockIcon = par1IconRegister.registerIcon("MinecraftExplosives:miningtnt");
+    	this.topIcon = par1IconRegister.registerIcon("MinecraftExplosives:miningtnt");
+    	this.bottomIcon = par1IconRegister.registerIcon("MinecraftExplosives:miningtnt");
     }	
 	
 	

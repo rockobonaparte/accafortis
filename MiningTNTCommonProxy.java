@@ -19,6 +19,8 @@ import cpw.mods.fml.common.registry.GameRegistry;
 import cpw.mods.fml.common.registry.TickRegistry;
 import cpw.mods.fml.relauncher.FMLInjectionData;
 import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.client.registry.RenderingRegistry;
+
 
 /**
  * Common proxy for the Mekanism mod.
@@ -62,7 +64,11 @@ public class MiningTNTCommonProxy {
 	/**
 	 * Register and load client-only render information.
 	 */
-	public void registerRenderInformation() {}
+	public void registerRenderInformation() {
+		
+		// TODO: This should go in a client proxy.
+		RenderingRegistry.registerEntityRenderingHandler(MiningTNTEntity.class, new RenderMiningTNTPrimed());
+	}
 
 	/**
 	 * Gets the armor index number from ClientProxy.

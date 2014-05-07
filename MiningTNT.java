@@ -46,6 +46,8 @@ public class MiningTNT
 		// Recipes
 		CraftingManager.getInstance().addRecipe(new ItemStack(miningTNTBlock, 1), 
 			new Object[] { "sgs", "gpg", "sgs", 's', Block.sand, 'g', Item.gunpowder, 'p', Item.paper });
+		
+		proxy.registerRenderInformation();
     }
 
     @EventHandler
