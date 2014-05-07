@@ -129,11 +129,11 @@ public class MiningTNTBlock extends Block
     {
 		if(side == 0)
 		{
-			return this.blockIcon;			
+			return this.bottomIcon;			
 		}
 		else if(side == 1)
 		{
-			return this.bottomIcon;			
+			return this.topIcon;			
 		}
 		else
 		{
@@ -150,8 +150,8 @@ public class MiningTNTBlock extends Block
     public void registerIcons(IconRegister par1IconRegister)
     {
     	this.blockIcon = par1IconRegister.registerIcon("MinecraftExplosives:miningtnt");
-    	this.topIcon = par1IconRegister.registerIcon("MinecraftExplosives:miningtnt");
-    	this.bottomIcon = par1IconRegister.registerIcon("MinecraftExplosives:miningtnt");
+    	this.topIcon = par1IconRegister.registerIcon("MinecraftExplosives:miningtnt_top");
+    	this.bottomIcon = par1IconRegister.registerIcon("MinecraftExplosives:miningtnt_bot");
     }	
 	
 	
