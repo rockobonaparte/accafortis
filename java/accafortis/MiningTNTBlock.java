@@ -1,4 +1,4 @@
-package miningexplosives;
+package accafortis;
 
 // Credits must go to Mekanism for providing their code up on GitHub.  
 // I heavily relied on it to figure out the general structure of modding.
@@ -149,9 +149,9 @@ public class MiningTNTBlock extends Block
 	
     public void registerIcons(IconRegister par1IconRegister)
     {
-    	this.blockIcon = par1IconRegister.registerIcon("MinecraftExplosives:miningtnt");
-    	this.topIcon = par1IconRegister.registerIcon("MinecraftExplosives:miningtnt_top");
-    	this.bottomIcon = par1IconRegister.registerIcon("MinecraftExplosives:miningtnt_bot");
+    	this.blockIcon = par1IconRegister.registerIcon("accafortis:miningtnt");
+    	this.topIcon = par1IconRegister.registerIcon("accafortis:miningtnt_top");
+    	this.bottomIcon = par1IconRegister.registerIcon("accafortis:miningtnt_bot");
     }	
 	
 	

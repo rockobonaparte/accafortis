@@ -1,4 +1,4 @@
-package miningexplosives;
+package accafortis;
 
 // This was taken from the vanilla explosion.  It's mostly a copy-paste of the deobfuscated Forge interpretation of it.
 // I particularly changed the line where it determines if a block is deleted in the explosion.

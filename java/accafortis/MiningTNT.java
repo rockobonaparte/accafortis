@@ -1,4 +1,4 @@
-package miningexplosives;
+package accafortis;
 
 // Credits must go to Mekanism for providing their code up on GitHub.  
 // I heavily relied on it to figure out the general structure of modding.
@@ -19,17 +19,17 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.CraftingManager;
 
 
-@Mod(modid = "MinecraftExplosives", name = "MinecraftExplosives", version = "alpha")
+@Mod(modid = "accafortis", name = "accafortis", version = "alpha")
 @NetworkMod(clientSideRequired = true)
 public class MiningTNT
 {
-    @Instance(value = "MinecraftExplosives")
+    @Instance(value = "accafortis")
     public static MiningTNT instance;
 	public static int miningTNTID;
 
 	public static Block miningTNTBlock;
         
-	@SidedProxy(clientSide = "miningexplosives.MiningTNTCommonProxy", serverSide = "miningexplosives.MiningTNTCommonProxy")
+	@SidedProxy(clientSide = "accafortis.MiningTNTCommonProxy", serverSide = "accafortis.MiningTNTCommonProxy")
     public static MiningTNTCommonProxy proxy;
 
     @EventHandler

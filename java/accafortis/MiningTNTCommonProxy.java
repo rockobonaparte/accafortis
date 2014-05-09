@@ -1,4 +1,4 @@
-package miningexplosives;
+package accafortis;
 
 // Credits must go to Mekanism for providing their code up on GitHub.  
 // I heavily relied on it to figure out the general structure of modding.

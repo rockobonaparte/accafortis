@@ -1,4 +1,4 @@
-package miningexplosives;
+package accafortis;
 
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
