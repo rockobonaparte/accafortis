@@ -21,7 +21,7 @@ public class RenderMiningTNTPrimed extends Render
         this.shadowSize = 0.5F;
     }
 
-    public void renderPrimedTNT(MiningTNTEntity par1EntityTNTPrimed, double par2, double par4, double par6, float par8, float par9)
+    public void renderPrimedTNT(EntityMiningTNT par1EntityTNTPrimed, double par2, double par4, double par6, float par8, float par9)
     {
         GL11.glPushMatrix();
         GL11.glTranslatef((float)par2, (float)par4, (float)par6);
@@ -49,7 +49,7 @@ public class RenderMiningTNTPrimed extends Render
 
         f2 = (1.0F - ((float)par1EntityTNTPrimed.fuse - par9 + 1.0F) / 100.0F) * 0.8F;
         this.bindEntityTexture(par1EntityTNTPrimed);
-        this.blockRenderer.renderBlockAsItem(MiningTNT.miningTNTBlock, 0, par1EntityTNTPrimed.getBrightness(par9));
+        this.blockRenderer.renderBlockAsItem(AccaFortis.miningTNTBlock, 0, par1EntityTNTPrimed.getBrightness(par9));
 
         if (par1EntityTNTPrimed.fuse / 5 % 2 == 0)
         {
@@ -68,7 +68,7 @@ public class RenderMiningTNTPrimed extends Render
         GL11.glPopMatrix();
     }
 
-    protected ResourceLocation func_110808_a(MiningTNTEntity par1EntityTNTPrimed)
+    protected ResourceLocation func_110808_a(EntityMiningTNT par1EntityTNTPrimed)
     {
         return TextureMap.locationBlocksTexture;
     }
@@ -78,7 +78,7 @@ public class RenderMiningTNTPrimed extends Render
      */
     protected ResourceLocation getEntityTexture(Entity par1Entity)
     {
-        return this.func_110808_a((MiningTNTEntity)par1Entity);
+        return this.func_110808_a((EntityMiningTNT)par1Entity);
     }
 
     /**
@@ -89,6 +89,6 @@ public class RenderMiningTNTPrimed extends Render
      */
     public void doRender(Entity par1Entity, double par2, double par4, double par6, float par8, float par9)
     {
-        this.renderPrimedTNT((MiningTNTEntity)par1Entity, par2, par4, par6, par8, par9);
+        this.renderPrimedTNT((EntityMiningTNT)par1Entity, par2, par4, par6, par8, par9);
     }
 }
