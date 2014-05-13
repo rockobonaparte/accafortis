@@ -109,15 +109,15 @@ public class BlockDrilledHole extends Block {
 
     protected int setDrilledHoleMetadata(DrilledHolePhases phase, int metadata)
     {
-        metadata = metadata & 0xFFFFFFE7;
+        metadata = (metadata & 0x18);
         switch(phase)
         {
             case DRILLED_ONLY:
-                return metadata | 3;
+                return metadata | (3 << 3);
             case GUNPOWDER_ADDED:
-                return metadata | 2;
+                return metadata | (2 << 3);
             case CLAY_PLUGGED:
-                return metadata | 1;
+                return metadata | (1 << 3);
             default:
                 return metadata;
         }
@@ -140,7 +140,7 @@ public class BlockDrilledHole extends Block {
             {
                 if(entityplayer.getCurrentEquippedItem() != null && entityplayer.getCurrentEquippedItem().itemID == Item.gunpowder.itemID)
                 {
-                    setDrilledHoleMetadata(DrilledHolePhases.GUNPOWDER_ADDED, metadata);
+                    metadata = setDrilledHoleMetadata(DrilledHolePhases.GUNPOWDER_ADDED, metadata);
                     world.setBlockMetadataWithNotify(x, y, z, metadata, 2);
                     return true;
                 }
@@ -149,7 +149,7 @@ public class BlockDrilledHole extends Block {
             case GUNPOWDER_ADDED:
                 if(entityplayer.getCurrentEquippedItem() != null && entityplayer.getCurrentEquippedItem().itemID == Item.clay.itemID)
                 {
-                    setDrilledHoleMetadata(DrilledHolePhases.CLAY_PLUGGED, metadata);
+                    metadata = setDrilledHoleMetadata(DrilledHolePhases.CLAY_PLUGGED, metadata);
                     world.setBlockMetadataWithNotify(x, y, z, metadata, 2);
                     return true;
                 }
@@ -276,7 +276,7 @@ public class BlockDrilledHole extends Block {
             j1 = 1;
         }
 
-        setDrilledHoleMetadata(DrilledHolePhases.DRILLED_ONLY, j1);
+        j1 = setDrilledHoleMetadata(DrilledHolePhases.DRILLED_ONLY, j1);
 
         return j1;
     }
@@ -299,9 +299,9 @@ public class BlockDrilledHole extends Block {
      */
     public void onBlockAdded(World par1World, int par2, int par3, int par4)
     {
-        if (par1World.getBlockMetadata(par2, par3, par4) == 0)
+        int metadata = par1World.getBlockMetadata(par2, par3, par4);
+        if (metadata == 0)
         {
-            int metadata = 0;
             if (par1World.isBlockSolidOnSide(par2 - 1, par3, par4, EAST, true))
             {
                 metadata = 1;
@@ -322,11 +322,10 @@ public class BlockDrilledHole extends Block {
             {
                 metadata = 5;
             }
-
-            setDrilledHoleMetadata(DrilledHolePhases.DRILLED_ONLY, metadata);
-            par1World.setBlockMetadataWithNotify(par2, par3, par4, metadata, 2);
-
         }
+
+        metadata = setDrilledHoleMetadata(DrilledHolePhases.DRILLED_ONLY, metadata);
+        par1World.setBlockMetadataWithNotify(par2, par3, par4, metadata, 2);
 
         this.dropTorchIfCantStay(par1World, par2, par3, par4);
     }
