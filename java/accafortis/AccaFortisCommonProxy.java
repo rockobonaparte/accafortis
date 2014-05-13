@@ -81,6 +81,7 @@ public class AccaFortisCommonProxy {
 	public void loadConfiguration()
 	{
 		AccaFortis.miningTNTID = 1337;
+        AccaFortis.drilledHoleID = 1338;
 	}
 
 	/**

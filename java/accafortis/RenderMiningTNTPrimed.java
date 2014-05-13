@@ -49,7 +49,7 @@ public class RenderMiningTNTPrimed extends Render
 
         f2 = (1.0F - ((float)par1EntityTNTPrimed.fuse - par9 + 1.0F) / 100.0F) * 0.8F;
         this.bindEntityTexture(par1EntityTNTPrimed);
-        this.blockRenderer.renderBlockAsItem(AccaFortis.miningTNTBlock, 0, par1EntityTNTPrimed.getBrightness(par9));
+        this.blockRenderer.renderBlockAsItem(AccaFortis.blockMiningTnt, 0, par1EntityTNTPrimed.getBrightness(par9));
 
         if (par1EntityTNTPrimed.fuse / 5 % 2 == 0)
         {

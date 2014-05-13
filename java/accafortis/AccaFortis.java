@@ -26,8 +26,10 @@ public class AccaFortis
     @Instance(value = "accafortis")
     public static AccaFortis instance;
 	public static int miningTNTID;
+    public static int drilledHoleID;
 
-	public static Block miningTNTBlock;
+	public static Block blockMiningTnt;
+    public static Block blockDrilledHole;
         
 	@SidedProxy(clientSide = "accafortis.AccaFortisCommonProxy", serverSide = "accafortis.AccaFortisCommonProxy")
     public static AccaFortisCommonProxy proxy;
@@ -37,14 +39,16 @@ public class AccaFortis
     {
     	proxy.loadConfiguration();
     	
-    	miningTNTBlock = new BlockMiningTnt(miningTNTID).setUnlocalizedName("MiningTNT");
-		GameRegistry.registerBlock(miningTNTBlock, "MiningTNT");
-    	  
+    	blockMiningTnt = new BlockMiningTnt(miningTNTID).setUnlocalizedName("MiningTNT");
+        blockDrilledHole = new BlockDrilledHole(drilledHoleID).setUnlocalizedName("DrilledHole");
+		GameRegistry.registerBlock(blockMiningTnt, "MiningTNT");
+        GameRegistry.registerBlock(blockDrilledHole, "DrilledHole");
+
 		//Registrations
 		EntityRegistry.registerModEntity(EntityMiningTNT.class, "MiningTNT", EntityRegistry.findGlobalUniqueEntityId(), this, 40, 5, true);
 
 		// Recipes
-		CraftingManager.getInstance().addRecipe(new ItemStack(miningTNTBlock, 1), 
+		CraftingManager.getInstance().addRecipe(new ItemStack(blockMiningTnt, 1),
 			new Object[] { "sgs", "gpg", "sgs", 's', Block.sand, 'g', Item.gunpowder, 'p', Item.paper });
 		
 		proxy.registerRenderInformation();
