@@ -29,7 +29,6 @@ public class BlockDrilledHole extends Block {
         SOUTH,
         EAST,
         WEST,
-        NOTHING,
         UNKNOWN,
     }
 
@@ -38,86 +37,78 @@ public class BlockDrilledHole extends Block {
         DRILLED_ONLY,
         GUNPOWDER_ADDED,
         CLAY_PLUGGED,
-        UNKNOWN,
     }
 
     protected DrilledIntoDirections getDirectionFromMetadata(int metadata)
     {
-        int directionField = metadata & 0x7;
-
-        switch(directionField)
+        switch(metadata / 3)
         {
-            case 6:
-                return DrilledIntoDirections.TOP;
             case 5:
                 return DrilledIntoDirections.BOTTOM;
             case 4:
-                return DrilledIntoDirections.NORTH;
+                return DrilledIntoDirections.TOP;
             case 3:
-                return DrilledIntoDirections.SOUTH;
+                return DrilledIntoDirections.NORTH;
             case 2:
-                return DrilledIntoDirections.EAST;
+                return DrilledIntoDirections.SOUTH;
             case 1:
-                return DrilledIntoDirections.WEST;
+                return DrilledIntoDirections.EAST;
             case 0:
-                return DrilledIntoDirections.NOTHING;
+                return DrilledIntoDirections.WEST;
             default:
-                return DrilledIntoDirections.UNKNOWN;
+                return DrilledIntoDirections.UNKNOWN;       // Shouldn't happen, given metadata's highest value is 15.
         }
     }
 
     protected int setDirectionInMetadata(DrilledIntoDirections direction, int metadata)
     {
-        metadata = metadata & 0xFFFFFF80;
+        // Need to eliminate current direction
+        metadata = metadata % 3;
+
         switch(direction)
         {
-            case TOP:
-                return metadata | 6;
             case BOTTOM:
-                return metadata | 5;
+                return metadata + 15;
+            case TOP:
+                return metadata + 12;
             case NORTH:
-                return metadata | 4;
+                return metadata + 9;
             case SOUTH:
-                return metadata | 3;
+                return metadata + 6;
             case EAST:
-                return metadata | 2;
+                return metadata + 3;
             case WEST:
-                return metadata | 1;
-            case NOTHING:
                 return metadata;
             default:
-                return metadata | 7;
+                return metadata;
         }
     }
 
     protected DrilledHolePhases getDrilledHolePhase(int metadata)
     {
-        int phaseField = (metadata & 0x18) >> 3;
-        switch(phaseField)
+
+        switch(metadata % 3)
         {
-            // Going for a 3, 2, 1 countdown progression sequence since we're talking about blowing up stuff here. ;)
-            case 3:
-                return DrilledHolePhases.DRILLED_ONLY;
-            case 2:
-                return DrilledHolePhases.GUNPOWDER_ADDED;
             case 1:
+                return DrilledHolePhases.GUNPOWDER_ADDED;
+            case 2:
                 return DrilledHolePhases.CLAY_PLUGGED;
             default:
-                return DrilledHolePhases.UNKNOWN;
+                return DrilledHolePhases.DRILLED_ONLY;
         }
     }
 
     protected int setDrilledHoleMetadata(DrilledHolePhases phase, int metadata)
     {
-        metadata = (metadata & 0x18);
+        // Need to eliminate current phase before applying new one
+        metadata -= metadata % 3;
+
         switch(phase)
         {
-            case DRILLED_ONLY:
-                return metadata | (3 << 3);
             case GUNPOWDER_ADDED:
-                return metadata | (2 << 3);
+                return metadata + 1;
             case CLAY_PLUGGED:
-                return metadata | (1 << 3);
+                return metadata + 2;
             default:
                 return metadata;
         }
@@ -249,36 +240,39 @@ public class BlockDrilledHole extends Block {
      */
     public int onBlockPlaced(World par1World, int par2, int par3, int par4, int par5, float par6, float par7, float par8, int par9)
     {
-        int j1 = par9;
+        int metadata = par9;
+
+        // TODO: Figure out the logic for placing DOWN
 
         if (par5 == 1 && this.canPlaceTorchOn(par1World, par2, par3 - 1, par4))
         {
-            j1 = 5;
+            metadata = 12;
         }
 
         if (par5 == 2 && par1World.isBlockSolidOnSide(par2, par3, par4 + 1, NORTH, true))
         {
-            j1 = 4;
+            metadata = 9;
         }
 
         if (par5 == 3 && par1World.isBlockSolidOnSide(par2, par3, par4 - 1, SOUTH, true))
         {
-            j1 = 3;
-        }
-
-        if (par5 == 4 && par1World.isBlockSolidOnSide(par2 + 1, par3, par4, WEST, true))
-        {
-            j1 = 2;
+            metadata = 6;
         }
 
         if (par5 == 5 && par1World.isBlockSolidOnSide(par2 - 1, par3, par4, EAST, true))
         {
-            j1 = 1;
+            metadata = 3;
         }
 
-        j1 = setDrilledHoleMetadata(DrilledHolePhases.DRILLED_ONLY, j1);
+        if (par5 == 4 && par1World.isBlockSolidOnSide(par2 + 1, par3, par4, WEST, true))
+        {
+            metadata = 0;
+        }
 
-        return j1;
+
+        metadata = setDrilledHoleMetadata(DrilledHolePhases.DRILLED_ONLY, metadata);
+
+        return metadata;
     }
 
     /**
@@ -299,33 +293,42 @@ public class BlockDrilledHole extends Block {
      */
     public void onBlockAdded(World par1World, int par2, int par3, int par4)
     {
-        int metadata = par1World.getBlockMetadata(par2, par3, par4);
-        if (metadata == 0)
-        {
-            if (par1World.isBlockSolidOnSide(par2 - 1, par3, par4, EAST, true))
-            {
-                metadata = 1;
-            }
-            else if (par1World.isBlockSolidOnSide(par2 + 1, par3, par4, WEST, true))
-            {
-                metadata = 2;
-            }
-            else if (par1World.isBlockSolidOnSide(par2, par3, par4 - 1, SOUTH, true))
-            {
-                metadata = 3;
-            }
-            else if (par1World.isBlockSolidOnSide(par2, par3, par4 + 1, NORTH, true))
-            {
-                metadata = 4;
-            }
-            else if (this.canPlaceTorchOn(par1World, par2, par3 - 1, par4))
-            {
-                metadata = 5;
-            }
-        }
-
-        metadata = setDrilledHoleMetadata(DrilledHolePhases.DRILLED_ONLY, metadata);
-        par1World.setBlockMetadataWithNotify(par2, par3, par4, metadata, 2);
+//        int metadata = par1World.getBlockMetadata(par2, par3, par4);
+//        if (metadata == 0)
+//        {
+//            if (par1World.isBlockSolidOnSide(par2, par3, par4 + 1, DOWN, true))
+//            {
+//                metadata = 15;
+//            }
+//            else if (par1World.isBlockSolidOnSide(par2, par3, par4 + 1, UP, true))
+//            {
+//                metadata = 12;
+//            }
+//            else if (par1World.isBlockSolidOnSide(par2, par3, par4 + 1, NORTH, true))
+//            {
+//                metadata = 9;
+//            }
+//            else if (par1World.isBlockSolidOnSide(par2, par3, par4 - 1, SOUTH, true))
+//            {
+//                metadata = 6;
+//            }
+//            else if (par1World.isBlockSolidOnSide(par2 - 1, par3, par4, EAST, true))
+//            {
+//                metadata = 3;
+//            }
+//            else if (par1World.isBlockSolidOnSide(par2 + 1, par3, par4, WEST, true))
+//            {
+//                metadata = 0;
+//            }
+////            else if (this.canPlaceTorchOn(par1World, par2, par3 - 1, par4))
+//            else
+//            {
+//                metadata = 0;
+//            }
+//        }
+//
+//        metadata = setDrilledHoleMetadata(DrilledHolePhases.DRILLED_ONLY, metadata);
+//        par1World.setBlockMetadataWithNotify(par2, par3, par4, metadata, 2);
 
         this.dropTorchIfCantStay(par1World, par2, par3, par4);
     }
@@ -343,30 +346,36 @@ public class BlockDrilledHole extends Block {
     {
         if (this.dropTorchIfCantStay(par1World, x, y, z))
         {
-            int i1 = par1World.getBlockMetadata(x, y, z);
+
+            DrilledIntoDirections direction = getDirectionFromMetadata(par1World.getBlockMetadata(x, y, z));
             boolean flag = false;
 
-            if (!par1World.isBlockSolidOnSide(x - 1, y, z, EAST, true) && i1 == 1)
+            if (!par1World.isBlockSolidOnSide(x - 1, y, z, EAST, true) && direction == DrilledIntoDirections.EAST)
             {
                 flag = true;
             }
 
-            if (!par1World.isBlockSolidOnSide(x + 1, y, z, WEST, true) && i1 == 2)
+            if (!par1World.isBlockSolidOnSide(x + 1, y, z, WEST, true) && direction == DrilledIntoDirections.WEST)
             {
                 flag = true;
             }
 
-            if (!par1World.isBlockSolidOnSide(x, y, z - 1, SOUTH, true) && i1 == 3)
+            if (!par1World.isBlockSolidOnSide(x, y, z - 1, SOUTH, true) && direction == DrilledIntoDirections.SOUTH)
             {
                 flag = true;
             }
 
-            if (!par1World.isBlockSolidOnSide(x, y, z + 1, NORTH, true) && i1 == 4)
+            if (!par1World.isBlockSolidOnSide(x, y, z + 1, NORTH, true) && direction == DrilledIntoDirections.NORTH)
             {
                 flag = true;
             }
 
-            if (!this.canPlaceTorchOn(par1World, x, y - 1, z) && i1 == 5)
+            if (!par1World.isBlockSolidOnSide(x, y + 1, z, NORTH, true) && direction == DrilledIntoDirections.BOTTOM)
+            {
+                flag = true;
+            }
+
+            if (!this.canPlaceTorchOn(par1World, x, y - 1, z) && direction == DrilledIntoDirections.TOP)
             {
                 flag = true;
             }
@@ -416,29 +425,32 @@ public class BlockDrilledHole extends Block {
      */
     public MovingObjectPosition collisionRayTrace(World par1World, int par2, int par3, int par4, Vec3 par5Vec3, Vec3 par6Vec3)
     {
-        int l = par1World.getBlockMetadata(par2, par3, par4) & 7;
         float f = 0.15F;
 
-        if (l == 1)
+        DrilledIntoDirections direction = getDirectionFromMetadata(par1World.getBlockMetadata(par2, par3, par4));
+        switch(direction)
         {
-            this.setBlockBounds(0.0F, 0.2F, 0.5F - f, f * 2.0F, 0.8F, 0.5F + f);
-        }
-        else if (l == 2)
-        {
-            this.setBlockBounds(1.0F - f * 2.0F, 0.2F, 0.5F - f, 1.0F, 0.8F, 0.5F + f);
-        }
-        else if (l == 3)
-        {
-            this.setBlockBounds(0.5F - f, 0.2F, 0.0F, 0.5F + f, 0.8F, f * 2.0F);
-        }
-        else if (l == 4)
-        {
-            this.setBlockBounds(0.5F - f, 0.2F, 1.0F - f * 2.0F, 0.5F + f, 0.8F, 1.0F);
-        }
-        else
-        {
-            f = 0.1F;
-            this.setBlockBounds(0.5F - f, 0.0F, 0.5F - f, 0.5F + f, 0.6F, 0.5F + f);
+            case TOP:
+                f = 0.1F;
+                this.setBlockBounds(0.5F - f, 0.0F, 0.5F - f, 0.5F + f, 0.6F, 0.5F + f);
+                break;
+            case BOTTOM:
+                // TODO: This probably has to be adjusted; just copy-pasted from TOP
+                f = 0.1F;
+                this.setBlockBounds(0.5F - f, 0.0F, 0.5F - f, 0.5F + f, 0.6F, 0.5F + f);
+                break;
+            case NORTH:
+                this.setBlockBounds(0.5F - f, 0.2F, 1.0F - f * 2.0F, 0.5F + f, 0.8F, 1.0F);
+                break;
+            case SOUTH:
+                this.setBlockBounds(0.5F - f, 0.2F, 0.0F, 0.5F + f, 0.8F, f * 2.0F);
+                break;
+            case EAST:
+                this.setBlockBounds(0.0F, 0.2F, 0.5F - f, f * 2.0F, 0.8F, 0.5F + f);
+                break;
+            case WEST:
+                this.setBlockBounds(1.0F - f * 2.0F, 0.2F, 0.5F - f, 1.0F, 0.8F, 0.5F + f);
+                break;
         }
 
         return super.collisionRayTrace(par1World, par2, par3, par4, par5Vec3, par6Vec3);
