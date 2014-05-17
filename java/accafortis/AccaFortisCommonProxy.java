@@ -63,6 +63,9 @@ public class AccaFortisCommonProxy {
 		
 		// TODO: This should go in a client proxy.
 		RenderingRegistry.registerEntityRenderingHandler(EntityMiningTNT.class, new RenderMiningTNTPrimed());
+
+        RenderingRegistry.registerBlockHandler(new BlockRendererDrilledHole());
+        AccaFortis.drilledHoleRendererID = RenderingRegistry.getNextAvailableRenderId();
 	}
 
 	/**

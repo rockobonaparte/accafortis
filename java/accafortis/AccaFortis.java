@@ -27,6 +27,7 @@ public class AccaFortis
     public static AccaFortis instance;
 	public static int miningTNTID;
     public static int drilledHoleID;
+    public static int drilledHoleRendererID;
 
 	public static Block blockMiningTnt;
     public static Block blockDrilledHole;

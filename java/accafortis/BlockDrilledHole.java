@@ -12,6 +12,7 @@ import net.minecraft.item.Item;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.MovingObjectPosition;
 import net.minecraft.util.Vec3;
+import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 
 import net.minecraftforge.common.ForgeDirection;
@@ -89,6 +90,8 @@ public class BlockDrilledHole extends Block {
 
         switch(metadata % 3)
         {
+            case 0:
+                return DrilledHolePhases.DRILLED_ONLY;
             case 1:
                 return DrilledHolePhases.GUNPOWDER_ADDED;
             case 2:
@@ -117,9 +120,39 @@ public class BlockDrilledHole extends Block {
     protected BlockDrilledHole(int par1)
     {
         super(par1, Material.circuits);
-        this.setTickRandomly(true);
         this.setCreativeTab(CreativeTabs.tabDecorations);
     }
+
+    @Override
+    public void setBlockBoundsBasedOnState(IBlockAccess par1IBlockAccess, int par2, int par3, int par4)
+    {
+        DrilledIntoDirections direction = getDirectionFromMetadata(par1IBlockAccess.getBlockMetadata(par2, par3, par4));
+        float f = 0.125F;
+        switch(direction)
+        {
+            case TOP:
+                this.setBlockBounds(0.0F, 0.0F, 0.0F, 1.0F, f, 1.0F);
+                break;
+            case BOTTOM:
+                this.setBlockBounds(0.0F, 1.0F, 0.0F, 1.0F, 1.0F - f, 1.0F);
+                break;
+            case NORTH:
+                this.setBlockBounds(0.0F, 0.0F, 1.0F, 1.0F, 1.0F, 1.0F - f);
+                break;
+            case SOUTH:
+                this.setBlockBounds(0.0F, 0.0F, 0.0F, 1.0f, 1.0F, f);
+                break;
+            case EAST:
+                this.setBlockBounds(0.0F, 0.0F, 0.0F, f, 1.0F, 1.0F);
+                break;
+            case WEST:
+                this.setBlockBounds(1.0F - f, 0.0F, 0.0F, 1.0F, 1.0F, 1.0F);
+                break;
+        }
+    }
+
+
+
 
     @Override
     public boolean onBlockActivated(World world, int x, int y, int z, EntityPlayer entityplayer, int i1, float f1, float f2, float f3)
@@ -204,7 +237,8 @@ public class BlockDrilledHole extends Block {
      */
     public int getRenderType()
     {
-        return 2;
+        // return 8;
+        return AccaFortis.drilledHoleRendererID;
     }
 
     /**
@@ -276,183 +310,43 @@ public class BlockDrilledHole extends Block {
     }
 
     /**
-     * Ticks the block if it's been scheduled
-     */
-    public void updateTick(World par1World, int par2, int par3, int par4, Random par5Random)
-    {
-        super.updateTick(par1World, par2, par3, par4, par5Random);
-
-        if (par1World.getBlockMetadata(par2, par3, par4) == 0)
-        {
-            this.onBlockAdded(par1World, par2, par3, par4);
-        }
-    }
-
-    /**
-     * Called whenever the block is added into the world. Args: world, x, y, z
-     */
-    public void onBlockAdded(World par1World, int par2, int par3, int par4)
-    {
-//        int metadata = par1World.getBlockMetadata(par2, par3, par4);
-//        if (metadata == 0)
-//        {
-//            if (par1World.isBlockSolidOnSide(par2, par3, par4 + 1, DOWN, true))
-//            {
-//                metadata = 15;
-//            }
-//            else if (par1World.isBlockSolidOnSide(par2, par3, par4 + 1, UP, true))
-//            {
-//                metadata = 12;
-//            }
-//            else if (par1World.isBlockSolidOnSide(par2, par3, par4 + 1, NORTH, true))
-//            {
-//                metadata = 9;
-//            }
-//            else if (par1World.isBlockSolidOnSide(par2, par3, par4 - 1, SOUTH, true))
-//            {
-//                metadata = 6;
-//            }
-//            else if (par1World.isBlockSolidOnSide(par2 - 1, par3, par4, EAST, true))
-//            {
-//                metadata = 3;
-//            }
-//            else if (par1World.isBlockSolidOnSide(par2 + 1, par3, par4, WEST, true))
-//            {
-//                metadata = 0;
-//            }
-////            else if (this.canPlaceTorchOn(par1World, par2, par3 - 1, par4))
-//            else
-//            {
-//                metadata = 0;
-//            }
-//        }
-//
-//        metadata = setDrilledHoleMetadata(DrilledHolePhases.DRILLED_ONLY, metadata);
-//        par1World.setBlockMetadataWithNotify(par2, par3, par4, metadata, 2);
-
-        this.dropTorchIfCantStay(par1World, par2, par3, par4);
-    }
-
-    /**
      * Lets the block know when one of its neighbor changes. Doesn't know which neighbor changed (coordinates passed are
      * their own) Args: x, y, z, neighbor blockID
      */
     public void onNeighborBlockChange(World par1World, int x, int y, int z, int par5)
     {
-        this.func_94397_d(par1World, x, y, z, par5);
-    }
+        int metadata = par1World.getBlockMetadata(x, y, z);
+        DrilledIntoDirections direction = getDirectionFromMetadata(metadata);
+        boolean drop = false;
 
-    protected boolean func_94397_d(World par1World, int x, int y, int z, int par5)
-    {
-        if (this.dropTorchIfCantStay(par1World, x, y, z))
-        {
-
-            DrilledIntoDirections direction = getDirectionFromMetadata(par1World.getBlockMetadata(x, y, z));
-            boolean flag = false;
-
-            if (!par1World.isBlockSolidOnSide(x - 1, y, z, EAST, true) && direction == DrilledIntoDirections.EAST)
-            {
-                flag = true;
-            }
-
-            if (!par1World.isBlockSolidOnSide(x + 1, y, z, WEST, true) && direction == DrilledIntoDirections.WEST)
-            {
-                flag = true;
-            }
-
-            if (!par1World.isBlockSolidOnSide(x, y, z - 1, SOUTH, true) && direction == DrilledIntoDirections.SOUTH)
-            {
-                flag = true;
-            }
-
-            if (!par1World.isBlockSolidOnSide(x, y, z + 1, NORTH, true) && direction == DrilledIntoDirections.NORTH)
-            {
-                flag = true;
-            }
-
-            if (!par1World.isBlockSolidOnSide(x, y + 1, z, NORTH, true) && direction == DrilledIntoDirections.BOTTOM)
-            {
-                flag = true;
-            }
-
-            if (!this.canPlaceTorchOn(par1World, x, y - 1, z) && direction == DrilledIntoDirections.TOP)
-            {
-                flag = true;
-            }
-
-            if (flag)
-            {
-                this.dropBlockAsItem(par1World, x, y, z, par1World.getBlockMetadata(x, y, z), 0);
-                par1World.setBlockToAir(x, y, z);
-                return true;
-            }
-            else
-            {
-                return false;
-            }
-        }
-        else
-        {
-            return true;
-        }
-    }
-
-    /**
-     * Tests if the block can remain at its current location and will drop as an item if it is unable to stay. Returns
-     * True if it can stay and False if it drops. Args: world, x, y, z
-     */
-    protected boolean dropTorchIfCantStay(World par1World, int par2, int par3, int par4)
-    {
-        if (!this.canPlaceBlockAt(par1World, par2, par3, par4))
-        {
-            if (par1World.getBlockId(par2, par3, par4) == this.blockID)
-            {
-                this.dropBlockAsItem(par1World, par2, par3, par4, par1World.getBlockMetadata(par2, par3, par4), 0);
-                par1World.setBlockToAir(par2, par3, par4);
-            }
-
-            return false;
-        }
-        else
-        {
-            return true;
-        }
-    }
-
-    /**
-     * Ray traces through the blocks collision from start vector to end vector returning a ray trace hit. Args: world,
-     * x, y, z, startVec, endVec
-     */
-    public MovingObjectPosition collisionRayTrace(World par1World, int par2, int par3, int par4, Vec3 par5Vec3, Vec3 par6Vec3)
-    {
-        float f = 0.15F;
-
-        DrilledIntoDirections direction = getDirectionFromMetadata(par1World.getBlockMetadata(par2, par3, par4));
         switch(direction)
         {
             case TOP:
-                f = 0.1F;
-                this.setBlockBounds(0.5F - f, 0.0F, 0.5F - f, 0.5F + f, 0.6F, 0.5F + f);
+                drop = !par1World.isBlockSolidOnSide(x, y + 1, z, UP);
                 break;
             case BOTTOM:
-                // TODO: This probably has to be adjusted; just copy-pasted from TOP
-                f = 0.1F;
-                this.setBlockBounds(0.5F - f, 0.0F, 0.5F - f, 0.5F + f, 0.6F, 0.5F + f);
+                drop = !par1World.isBlockSolidOnSide(x, y - 1, z, DOWN);
                 break;
             case NORTH:
-                this.setBlockBounds(0.5F - f, 0.2F, 1.0F - f * 2.0F, 0.5F + f, 0.8F, 1.0F);
+                drop = !par1World.isBlockSolidOnSide(x, y, z + 1, NORTH);
                 break;
             case SOUTH:
-                this.setBlockBounds(0.5F - f, 0.2F, 0.0F, 0.5F + f, 0.8F, f * 2.0F);
+                drop = !par1World.isBlockSolidOnSide(x, y, z - 1, SOUTH);
                 break;
             case EAST:
-                this.setBlockBounds(0.0F, 0.2F, 0.5F - f, f * 2.0F, 0.8F, 0.5F + f);
+                drop = !par1World.isBlockSolidOnSide(x - 1, y, z, EAST);
                 break;
             case WEST:
-                this.setBlockBounds(1.0F - f * 2.0F, 0.2F, 0.5F - f, 1.0F, 0.8F, 0.5F + f);
+                drop = !par1World.isBlockSolidOnSide(x + 1, y, z, WEST);
                 break;
         }
 
-        return super.collisionRayTrace(par1World, par2, par3, par4, par5Vec3, par6Vec3);
+        if(drop)
+        {
+            par1World.setBlockToAir(x, y, z);
+        }
+
+        super.onNeighborBlockChange(par1World, x, y, z, par5);
+
     }
 }
