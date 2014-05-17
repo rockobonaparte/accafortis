@@ -40,7 +40,8 @@ public class BlockDrilledHole extends Block {
         CLAY_PLUGGED,
     }
 
-    protected DrilledIntoDirections getDirectionFromMetadata(int metadata)
+    // These metadata helpers have to be public because things like external block renderers need to know what they are.
+    public static DrilledIntoDirections getDirectionFromMetadata(int metadata)
     {
         switch(metadata / 3)
         {
@@ -61,7 +62,7 @@ public class BlockDrilledHole extends Block {
         }
     }
 
-    protected int setDirectionInMetadata(DrilledIntoDirections direction, int metadata)
+    public static int setDirectionInMetadata(DrilledIntoDirections direction, int metadata)
     {
         // Need to eliminate current direction
         metadata = metadata % 3;
@@ -85,7 +86,7 @@ public class BlockDrilledHole extends Block {
         }
     }
 
-    protected DrilledHolePhases getDrilledHolePhase(int metadata)
+    public static DrilledHolePhases getDrilledHolePhase(int metadata)
     {
 
         switch(metadata % 3)
@@ -101,7 +102,7 @@ public class BlockDrilledHole extends Block {
         }
     }
 
-    protected int setDrilledHoleMetadata(DrilledHolePhases phase, int metadata)
+    public static int setDrilledHoleMetadata(DrilledHolePhases phase, int metadata)
     {
         // Need to eliminate current phase before applying new one
         metadata -= metadata % 3;

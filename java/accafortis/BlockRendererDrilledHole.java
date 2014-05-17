@@ -35,39 +35,62 @@ public class BlockRendererDrilledHole implements ISimpleBlockRenderingHandler {
         double d2 = (double)icon.getMaxU();
         double d3 = (double)icon.getMaxV();
         int l = world.getBlockMetadata(x, y, z);
-        double d4 = 0.0D;
-        double d5 = 0.05000000074505806D;
+        double d4 = 0.0D;                   // WTF zero?
+        double d5 = 0.05000000074505806D;   // magic number taken from ladder block renderer.  Don't ask me I just work here.
 
-        if (l == 5)
-        {
-            tessellator.addVertexWithUV((double)x + d5, (double)(y + 1) + d4, (double)(z + 1) + d4, d0, d1);
-            tessellator.addVertexWithUV((double)x + d5, (double)(y + 0) - d4, (double)(z + 1) + d4, d0, d3);
-            tessellator.addVertexWithUV((double)x + d5, (double)(y + 0) - d4, (double)(z + 0) - d4, d2, d3);
-            tessellator.addVertexWithUV((double)x + d5, (double)(y + 1) + d4, (double)(z + 0) - d4, d2, d1);
-        }
+        BlockDrilledHole.DrilledIntoDirections direction = BlockDrilledHole.getDirectionFromMetadata(l);
 
-        if (l == 4)
-        {
-            tessellator.addVertexWithUV((double)(x + 1) - d5, (double)(y + 0) - d4, (double)(z + 1) + d4, d2, d3);
-            tessellator.addVertexWithUV((double)(x + 1) - d5, (double)(y + 1) + d4, (double)(z + 1) + d4, d2, d1);
-            tessellator.addVertexWithUV((double)(x + 1) - d5, (double)(y + 1) + d4, (double)(z + 0) - d4, d0, d1);
-            tessellator.addVertexWithUV((double)(x + 1) - d5, (double)(y + 0) - d4, (double)(z + 0) - d4, d0, d3);
-        }
+        switch(direction) {
+            case NORTH:
+                tessellator.addVertexWithUV((double)(x + 1) + d4, (double)(y + 1) + d4, (double)(z + 1) - d5, d0, d1);
+                tessellator.addVertexWithUV((double)(x + 1) + d4, (double)(y + 0) - d4, (double)(z + 1) - d5, d0, d3);
+                tessellator.addVertexWithUV((double)(x + 0) - d4, (double)(y + 0) - d4, (double)(z + 1) - d5, d2, d3);
+                tessellator.addVertexWithUV((double)(x + 0) - d4, (double)(y + 1) + d4, (double)(z + 1) - d5, d2, d1);
+                break;
 
-        if (l == 3)
-        {
-            tessellator.addVertexWithUV((double)(x + 1) + d4, (double)(y + 0) - d4, (double)z + d5, d2, d3);
-            tessellator.addVertexWithUV((double)(x + 1) + d4, (double)(y + 1) + d4, (double)z + d5, d2, d1);
-            tessellator.addVertexWithUV((double)(x + 0) - d4, (double)(y + 1) + d4, (double)z + d5, d0, d1);
-            tessellator.addVertexWithUV((double)(x + 0) - d4, (double)(y + 0) - d4, (double)z + d5, d0, d3);
-        }
+            case SOUTH:
+                tessellator.addVertexWithUV((double)(x + 1) + d4, (double)(y + 0) - d4, (double)z + d5, d2, d3);
+                tessellator.addVertexWithUV((double)(x + 1) + d4, (double)(y + 1) + d4, (double)z + d5, d2, d1);
+                tessellator.addVertexWithUV((double)(x + 0) - d4, (double)(y + 1) + d4, (double)z + d5, d0, d1);
+                tessellator.addVertexWithUV((double)(x + 0) - d4, (double)(y + 0) - d4, (double)z + d5, d0, d3);
+                break;
 
-        if (l == 2)
-        {
-            tessellator.addVertexWithUV((double)(x + 1) + d4, (double)(y + 1) + d4, (double)(z + 1) - d5, d0, d1);
-            tessellator.addVertexWithUV((double)(x + 1) + d4, (double)(y + 0) - d4, (double)(z + 1) - d5, d0, d3);
-            tessellator.addVertexWithUV((double)(x + 0) - d4, (double)(y + 0) - d4, (double)(z + 1) - d5, d2, d3);
-            tessellator.addVertexWithUV((double)(x + 0) - d4, (double)(y + 1) + d4, (double)(z + 1) - d5, d2, d1);
+            case WEST:
+                tessellator.addVertexWithUV((double)(x + 1) - d5, (double)(y + 0) - d4, (double)(z + 1) + d4, d2, d3);
+                tessellator.addVertexWithUV((double)(x + 1) - d5, (double)(y + 1) + d4, (double)(z + 1) + d4, d2, d1);
+                tessellator.addVertexWithUV((double)(x + 1) - d5, (double)(y + 1) + d4, (double)(z + 0) - d4, d0, d1);
+                tessellator.addVertexWithUV((double)(x + 1) - d5, (double)(y + 0) - d4, (double)(z + 0) - d4, d0, d3);
+                break;
+
+            case EAST:
+                tessellator.addVertexWithUV((double)x + d5, (double)(y + 1) + d4, (double)(z + 1) + d4, d0, d1);
+                tessellator.addVertexWithUV((double)x + d5, (double)(y + 0) - d4, (double)(z + 1) + d4, d0, d3);
+                tessellator.addVertexWithUV((double)x + d5, (double)(y + 0) - d4, (double)(z + 0) - d4, d2, d3);
+                tessellator.addVertexWithUV((double)x + d5, (double)(y + 1) + d4, (double)(z + 0) - d4, d2, d1);
+                break;
+
+            case TOP:
+                tessellator.addVertexWithUV((double)(x + 0) + d4, (double)(y + 0) + d5, (double)(z + 1) - d4, d0, d3);
+                tessellator.addVertexWithUV((double)(x + 1) + d4, (double)(y + 0) + d5, (double)(z + 1) - d4, d0, d1);
+                tessellator.addVertexWithUV((double)(x + 1) - d4, (double)(y + 0) + d5, (double)(z + 0) - d4, d2, d1);
+                tessellator.addVertexWithUV((double)(x + 0) - d4, (double)(y + 0) + d5, (double)(z + 0) - d4, d2, d3);
+                break;
+
+            case BOTTOM:
+                tessellator.addVertexWithUV((double)(x + 1) - d4, (double)(y + 0) + d5, (double)(z + 0) - d4, d2, d1);
+                tessellator.addVertexWithUV((double)(x + 1) + d4, (double)(y + 0) + d5, (double)(z + 1) - d4, d0, d1);
+                tessellator.addVertexWithUV((double)(x + 0) + d4, (double)(y + 0) + d5, (double)(z + 1) - d4, d0, d3);
+                tessellator.addVertexWithUV((double)(x + 0) - d4, (double)(y + 0) + d5, (double)(z + 0) - d4, d2, d3);
+                break;
+
+            default:
+                // Fall-through: Let's do something absolutely gross so somebody will report it, but it won't crash
+                // anything!  Diagonals!
+                tessellator.addVertexWithUV((double)x + d5, (double)(y + 1) + d4, (double)(z + 1) + d4, d0, d1);
+                tessellator.addVertexWithUV((double)x + d5, (double)(y + 0) - d4, (double)(z + 1) + d4, d0, d3);
+                tessellator.addVertexWithUV((double)x, (double)(y + 0) - d4, (double)(z + 0) - d4, d2, d3);
+                tessellator.addVertexWithUV((double)x, (double)(y + 1) + d4, (double)(z + 0) - d4, d2, d1);
+                break;
         }
 
         return true;
