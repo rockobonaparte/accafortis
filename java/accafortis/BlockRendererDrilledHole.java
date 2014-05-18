@@ -19,13 +19,8 @@ public class BlockRendererDrilledHole implements ISimpleBlockRenderingHandler {
     @Override
     public boolean renderWorldBlock(IBlockAccess world, int x, int y, int z, Block block, int modelId, RenderBlocks renderer) {
         Tessellator tessellator = Tessellator.instance;
-//        Icon icon = this.getBlockIconFromSide(par1Block, 0);
-//
-//        if (this.hasOverrideBlockTexture())
-//        {
-//            icon = this.overrideBlockTexture;
-//        }
-        Icon icon = block.getIcon(0,0);
+        int l = world.getBlockMetadata(x, y, z);
+        Icon icon = block.getIcon(0, l);
 
         tessellator.setBrightness(block.getMixedBrightnessForBlock(world, x, y, z));
         float f = 1.0F;
@@ -34,7 +29,6 @@ public class BlockRendererDrilledHole implements ISimpleBlockRenderingHandler {
         double d1 = (double)icon.getMinV();
         double d2 = (double)icon.getMaxU();
         double d3 = (double)icon.getMaxV();
-        int l = world.getBlockMetadata(x, y, z);
         double d4 = 0.0D;                   // WTF zero?
         double d5 = 0.05000000074505806D;   // magic number taken from ladder block renderer.  Don't ask me I just work here.
 

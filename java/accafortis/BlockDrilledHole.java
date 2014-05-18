@@ -6,10 +6,13 @@ import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 import java.util.Random;
 import net.minecraft.block.material.Material;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.texture.IconRegister;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
 import net.minecraft.util.AxisAlignedBB;
+import net.minecraft.util.Icon;
 import net.minecraft.util.MovingObjectPosition;
 import net.minecraft.util.Vec3;
 import net.minecraft.world.IBlockAccess;
@@ -22,6 +25,15 @@ import static net.minecraftforge.common.ForgeDirection.*;
  * Created by RockoBonaparte on 5/10/14.
  */
 public class BlockDrilledHole extends Block {
+
+    @SideOnly(Side.CLIENT)
+    private Icon drilledIcon;
+
+    @SideOnly(Side.CLIENT)
+    private Icon filledIcon;
+
+    @SideOnly(Side.CLIENT)
+    private Icon pluggedIcon;
 
     protected enum DrilledIntoDirections {
         TOP,
@@ -167,6 +179,8 @@ public class BlockDrilledHole extends Block {
                 {
                     metadata = setDrilledHoleMetadata(DrilledHolePhases.GUNPOWDER_ADDED, metadata);
                     world.setBlockMetadataWithNotify(x, y, z, metadata, 2);
+                    this.blockIcon = this.filledIcon;
+                    world.markBlockForRenderUpdate(x, y, z);
                     return true;
                 }
             }
@@ -176,6 +190,9 @@ public class BlockDrilledHole extends Block {
                 {
                     metadata = setDrilledHoleMetadata(DrilledHolePhases.CLAY_PLUGGED, metadata);
                     world.setBlockMetadataWithNotify(x, y, z, metadata, 2);
+                    this.blockIcon = this.pluggedIcon;
+                    Minecraft.getMinecraft().renderGlobal.markBlockForRenderUpdate(x, y, z);
+                    world.markBlockForRenderUpdate(x, y, z);
                     return true;
                 }
                 break;
@@ -348,6 +365,30 @@ public class BlockDrilledHole extends Block {
         }
 
         super.onNeighborBlockChange(par1World, x, y, z, par5);
-
     }
+
+    @Override
+    public Icon getIcon(int side, int metadata)
+    {
+        DrilledHolePhases phase = getDrilledHolePhase(metadata);
+        switch(phase)
+        {
+            case DRILLED_ONLY:
+                return this.drilledIcon;
+            case GUNPOWDER_ADDED:
+                return this.filledIcon;
+            case CLAY_PLUGGED:
+                return this.pluggedIcon;
+            default:
+                return this.drilledIcon;        // Really here just to make javac happy that this method will return...
+        }
+    }
+
+    public void registerIcons(IconRegister par1IconRegister)
+    {
+        this.drilledIcon = par1IconRegister.registerIcon("accafortis:drilledhole");
+        this.filledIcon = par1IconRegister.registerIcon("accafortis:filledhole");
+        this.pluggedIcon = par1IconRegister.registerIcon("accafortis:pluggedhole");
+    }
+
 }
