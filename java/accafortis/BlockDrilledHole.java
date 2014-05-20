@@ -214,11 +214,38 @@ public class BlockDrilledHole extends Block {
     // TODO: Switch an entity representing the block about to explode.
     public void explode(World world, int x, int y, int z)
     {
-        if(!world.isRemote)
-        {
-            EntityMiningTNT entity = new EntityMiningTNT(world, x + 0.5F, y + 0.5F, z + 0.5F);
-            world.spawnEntityInWorld(entity);
-            world.playSoundAtEntity(entity, "random.fuse", 1.0F, 1.0F);
+        int metadata = world.getBlockMetadata(x, y, z);
+        DrilledIntoDirections direction = getDirectionFromMetadata(metadata);
+
+        int attachedBlock = 0;
+
+        switch(direction) {
+            case TOP:
+                attachedBlock = world.getBlockId(x, y - 1, z);
+                break;
+            case BOTTOM:
+                attachedBlock = world.getBlockId(x, y + 1, z);
+                break;
+            case NORTH:
+                attachedBlock = world.getBlockId(x, y, z + 1);
+                break;
+            case SOUTH:
+                attachedBlock = world.getBlockId(x, y, z - 1);
+                break;
+            case EAST:
+                attachedBlock = world.getBlockId(x - 1, y, z);
+                break;
+            case WEST:
+                attachedBlock = world.getBlockId(x + 1, y, z);
+                break;
+        }
+
+        if(attachedBlock != 0) {
+            if(!world.isRemote) {
+                EntityDrilledHoleExploding entity = new EntityDrilledHoleExploding(world, x, y, z, attachedBlock);
+                world.spawnEntityInWorld(entity);
+                world.playSoundAtEntity(entity, "random.fuse", 1.0F, 1.0F);
+            }
         }
     }
 
