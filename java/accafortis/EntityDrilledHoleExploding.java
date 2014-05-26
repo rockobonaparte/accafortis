@@ -35,9 +35,13 @@ public class EntityDrilledHoleExploding extends Entity {
 
         float randPi = (float)(world.rand.nextFloat()*Math.PI*2);
 
-        motionX = -(Math.sin(randPi))*0.02F;
-        motionY = 0.2;
-        motionZ = -(Math.cos(randPi))*0.02F;
+//        motionX = -(Math.sin(randPi))*0.02F;
+//        motionY = 0.2;
+//        motionZ = -(Math.cos(randPi))*0.02F;
+
+        motionX = 0.0F;
+        motionY = 0.0F;
+        motionZ = 0.0F;
 
         fuse = 60;
 
@@ -70,24 +74,24 @@ public class EntityDrilledHoleExploding extends Entity {
     @Override
     public void onUpdate()
     {
-        prevPosX = posX;
-        prevPosY = posY;
-        prevPosZ = posZ;
-
-        motionY -= 0.04;
-
-        moveEntity(motionX, motionY, motionZ);
-
-        motionX *= 0.98;
-        motionY *= 0.98;
-        motionZ *= 0.98;
-
-        if(onGround)
-        {
-            motionX *= 0.7;
-            motionZ *= 0.7;
-            motionY *= -0.5;
-        }
+//        prevPosX = posX;
+//        prevPosY = posY;
+//        prevPosZ = posZ;
+//
+//        motionY -= 0.04;
+//
+//        moveEntity(motionX, motionY, motionZ);
+//
+//        motionX *= 0.98;
+//        motionY *= 0.98;
+//        motionZ *= 0.98;
+//
+//        if(onGround)
+//        {
+//            motionX *= 0.7;
+//            motionZ *= 0.7;
+//            motionY *= -0.5;
+//        }
 
         if(fuse-- <= 0)
         {
@@ -138,14 +142,14 @@ public class EntityDrilledHoleExploding extends Entity {
 //	        return explosion;
 //	    }
 
-        MiningTNTExplosion explosion = new MiningTNTExplosion(worldObj, this, posX, posY, posZ, 5.0f);
+        MiningTNTExplosion explosion = new MiningTNTExplosion(worldObj, this, posX, posY, posZ, 1.0001f);
         explosion.isFlaming = false;			// Almost set that to true.  LOL!  Burning dynamite whooo!
         explosion.isSmoking = true;
         explosion.doExplosionA();
         explosion.doExplosionB(true);
 
         // I Know right now this won't do exactly what I want (drop a block in place of this entity, but it's a start.
-        worldObj.setBlock((int) posX, (int) posY, (int) posZ, blockToDrop);
+//        worldObj.setBlock((int) posX, (int) posY, (int) posZ, blockToDrop);
 //        worldObj.destroyBlock((int) posX, (int) posY, (int) posZ, true);
 
         hasExploded = true;

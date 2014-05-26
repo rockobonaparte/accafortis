@@ -33,7 +33,7 @@ public class MiningTNTExplosion extends Explosion
 
     /** whether or not this explosion spawns smoke particles */
     public boolean isSmoking = true;
-    private int field_77289_h = 16;
+    private int explosionBlockScanLimit = 16;
     private Random explosionRNG = null;
     private World worldObj;
     public double explosionX;
@@ -46,15 +46,15 @@ public class MiningTNTExplosion extends Explosion
     public List affectedBlockPositions = new ArrayList();
     private Map field_77288_k = new HashMap();
 
-    public MiningTNTExplosion(World par1World, Entity par2Entity, double par3, double par5, double par7, float par9)
+    public MiningTNTExplosion(World par1World, Entity par2Entity, double x, double y, double z, float radius)
     {
-    	super(par1World, par2Entity, par3, par5, par7, par9);
+    	super(par1World, par2Entity, x, y, z, radius);
         worldObj = par1World;
         exploder = par2Entity;
-        explosionSize = par9;
-        explosionX = par3;
-        explosionY = par5;
-        explosionZ = par7;
+        explosionSize = radius;
+        explosionX = x;
+        explosionY = y;
+        explosionZ = z;
         explosionRNG = worldObj.rand;
     }
 
@@ -63,26 +63,23 @@ public class MiningTNTExplosion extends Explosion
      */
     public void doExplosionA()
     {
-        float f = this.explosionSize;
+        float savedExplosionSize = this.explosionSize;
         HashSet hashset = new HashSet();
-        int i;
-        int j;
-        int k;
         double d0;
         double d1;
         double d2;
 
-        for (i = 0; i < this.field_77289_h; ++i)
+        for (int i = 0; i < explosionBlockScanLimit; ++i)
         {
-            for (j = 0; j < this.field_77289_h; ++j)
+            for (int j = 0; j < explosionBlockScanLimit; ++j)
             {
-                for (k = 0; k < this.field_77289_h; ++k)
+                for (int k = 0; k < explosionBlockScanLimit; ++k)
                 {
-                    if (i == 0 || i == this.field_77289_h - 1 || j == 0 || j == this.field_77289_h - 1 || k == 0 || k == this.field_77289_h - 1)
+                    if (i == 0 || i == explosionBlockScanLimit - 1 || j == 0 || j == explosionBlockScanLimit - 1 || k == 0 || k == explosionBlockScanLimit - 1)
                     {
-                        double d3 = (double)((float)i / ((float)this.field_77289_h - 1.0F) * 2.0F - 1.0F);
-                        double d4 = (double)((float)j / ((float)this.field_77289_h - 1.0F) * 2.0F - 1.0F);
-                        double d5 = (double)((float)k / ((float)this.field_77289_h - 1.0F) * 2.0F - 1.0F);
+                        double d3 = (double)((float)i / ((float)explosionBlockScanLimit - 1.0F) * 2.0F - 1.0F);
+                        double d4 = (double)((float)j / ((float)explosionBlockScanLimit - 1.0F) * 2.0F - 1.0F);
+                        double d5 = (double)((float)k / ((float)explosionBlockScanLimit - 1.0F) * 2.0F - 1.0F);
                         double d6 = Math.sqrt(d3 * d3 + d4 * d4 + d5 * d5);
                         d3 /= d6;
                         d4 /= d6;
@@ -94,21 +91,21 @@ public class MiningTNTExplosion extends Explosion
 
                         for (float f2 = 0.3F; f1 > 0.0F; f1 -= f2 * 0.75F)
                         {
-                            int l = MathHelper.floor_double(d0);
-                            int i1 = MathHelper.floor_double(d1);
-                            int j1 = MathHelper.floor_double(d2);
-                            int k1 = this.worldObj.getBlockId(l, i1, j1);
+                            int blockX = MathHelper.floor_double(d0);
+                            int blockY = MathHelper.floor_double(d1);
+                            int blockZ = MathHelper.floor_double(d2);
+                            int k1 = this.worldObj.getBlockId(blockX, blockY, blockZ);
 
                             if (k1 > 0)
                             {
                                 Block block = Block.blocksList[k1];
-                                float f3 = this.exploder != null ? this.exploder.getBlockExplosionResistance(this, this.worldObj, l, i1, j1, block) : block.getExplosionResistance(this.exploder, worldObj, l, i1, j1, explosionX, explosionY, explosionZ);
+                                float f3 = this.exploder != null ? this.exploder.getBlockExplosionResistance(this, this.worldObj, blockX, blockY, blockZ, block) : block.getExplosionResistance(this.exploder, worldObj, blockX, blockY, blockZ, explosionX, explosionY, explosionZ);
                                 f1 -= (f3 + 0.3F) * f2;
                             }
 
-                            if (f1 > 0.0F && (this.exploder == null || this.exploder.shouldExplodeBlock(this, this.worldObj, l, i1, j1, k1, f1)))
+                            if (f1 > 0.0F && (this.exploder == null || this.exploder.shouldExplodeBlock(this, this.worldObj, blockX, blockY, blockZ, k1, f1)))
                             {
-                                hashset.add(new ChunkPosition(l, i1, j1));
+                                hashset.add(new ChunkPosition(blockX, blockY, blockZ));
                             }
 
                             d0 += d3 * (double)f2;
@@ -122,9 +119,9 @@ public class MiningTNTExplosion extends Explosion
 
         this.affectedBlockPositions.addAll(hashset);
         this.explosionSize *= 2.0F;
-        i = MathHelper.floor_double(this.explosionX - (double)this.explosionSize - 1.0D);
-        j = MathHelper.floor_double(this.explosionX + (double)this.explosionSize + 1.0D);
-        k = MathHelper.floor_double(this.explosionY - (double)this.explosionSize - 1.0D);
+        int i = MathHelper.floor_double(this.explosionX - (double)this.explosionSize - 1.0D);
+        int j = MathHelper.floor_double(this.explosionX + (double)this.explosionSize + 1.0D);
+        int k = MathHelper.floor_double(this.explosionY - (double)this.explosionSize - 1.0D);
         int l1 = MathHelper.floor_double(this.explosionY + (double)this.explosionSize + 1.0D);
         int i2 = MathHelper.floor_double(this.explosionZ - (double)this.explosionSize - 1.0D);
         int j2 = MathHelper.floor_double(this.explosionZ + (double)this.explosionSize + 1.0D);
@@ -164,7 +161,7 @@ public class MiningTNTExplosion extends Explosion
             }
         }
 
-        this.explosionSize = f;
+        this.explosionSize = savedExplosionSize;
     }
 
     /**
@@ -263,16 +260,16 @@ public class MiningTNTExplosion extends Explosion
         }
     }
 
-    public Map func_77277_b()
-    {
-        return this.field_77288_k;
-    }
-
-    /**
-     * Returns either the entity that placed the explosive block, the entity that caused the explosion or null.
-     */
-    public EntityLivingBase getExplosivePlacedBy()
-    {
-        return this.exploder == null ? null : (this.exploder instanceof EntityTNTPrimed ? ((EntityTNTPrimed)this.exploder).getTntPlacedBy() : (this.exploder instanceof EntityLivingBase ? (EntityLivingBase)this.exploder : null));
-    }
+//    public Map func_77277_b()
+//    {
+//        return this.field_77288_k;
+//    }
+//
+//    /**
+//     * Returns either the entity that placed the explosive block, the entity that caused the explosion or null.
+//     */
+//    public EntityLivingBase getExplosivePlacedBy()
+//    {
+//        return this.exploder == null ? null : (this.exploder instanceof EntityTNTPrimed ? ((EntityTNTPrimed)this.exploder).getTntPlacedBy() : (this.exploder instanceof EntityLivingBase ? (EntityLivingBase)this.exploder : null));
+//    }
 }
