@@ -17,6 +17,8 @@ public class EntityDrilledHoleExploding extends Entity {
 
     private int blockToDrop;
 
+    private double affectedBlockX, affectedBlockY, affectedBlockZ;
+
     public EntityDrilledHoleExploding(World world, int blockToDrop)
     {
         super(world);
@@ -27,11 +29,14 @@ public class EntityDrilledHoleExploding extends Entity {
         yOffset = height / 2.0F;
     }
 
-    public EntityDrilledHoleExploding(World world, double x, double y, double z, int blockToDrop)
+    public EntityDrilledHoleExploding(World world, double x, double y, double z, double affectedX, double affectedY, double affectedZ, int blockToDrop)
     {
         this(world, blockToDrop);
 
         setPosition(x, y, z);
+        affectedBlockX = affectedX;
+        affectedBlockY = affectedY;
+        affectedBlockZ = affectedZ;
 
         float randPi = (float)(world.rand.nextFloat()*Math.PI*2);
 
@@ -142,11 +147,13 @@ public class EntityDrilledHoleExploding extends Entity {
 //	        return explosion;
 //	    }
 
-        MiningTNTExplosion explosion = new MiningTNTExplosion(worldObj, this, posX, posY, posZ, 1.0001f);
+        MiningTNTExplosion explosion = new MiningTNTExplosion(worldObj, this, affectedBlockX + 0.5, affectedBlockY + 0.5, affectedBlockZ + 0.5, 0.4f);
         explosion.isFlaming = false;			// Almost set that to true.  LOL!  Burning dynamite whooo!
         explosion.isSmoking = true;
-        explosion.doExplosionA();
-        explosion.doExplosionB(true);
+
+        explosion.doNotNotchExplosion();
+        // explosion.doExplosionA();
+        // explosion.doExplosionB(true);
 
         // I Know right now this won't do exactly what I want (drop a block in place of this entity, but it's a start.
 //        worldObj.setBlock((int) posX, (int) posY, (int) posZ, blockToDrop);

@@ -219,30 +219,40 @@ public class BlockDrilledHole extends Block {
 
         int attachedBlock = 0;
 
+        int affectedX = x;
+        int affectedY = y;
+        int affectedZ = z;
+
         switch(direction) {
             case TOP:
                 attachedBlock = world.getBlockId(x, y - 1, z);
+                affectedY -= 1;
                 break;
             case BOTTOM:
                 attachedBlock = world.getBlockId(x, y + 1, z);
+                affectedY += 1;
                 break;
             case NORTH:
                 attachedBlock = world.getBlockId(x, y, z + 1);
+                affectedZ += 1;
                 break;
             case SOUTH:
                 attachedBlock = world.getBlockId(x, y, z - 1);
+                affectedZ -= 1;
                 break;
             case EAST:
                 attachedBlock = world.getBlockId(x - 1, y, z);
+                affectedX -= 1;
                 break;
             case WEST:
                 attachedBlock = world.getBlockId(x + 1, y, z);
+                affectedX += 1;
                 break;
         }
 
         if(attachedBlock != 0) {
             if(!world.isRemote) {
-                EntityDrilledHoleExploding entity = new EntityDrilledHoleExploding(world, x, y, z, attachedBlock);
+                EntityDrilledHoleExploding entity = new EntityDrilledHoleExploding(world, x, y, z, affectedX, affectedY, affectedZ, attachedBlock);
                 world.spawnEntityInWorld(entity);
                 world.playSoundAtEntity(entity, "random.fuse", 1.0F, 1.0F);
             }

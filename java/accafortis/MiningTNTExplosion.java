@@ -58,6 +58,55 @@ public class MiningTNTExplosion extends Explosion
         explosionRNG = worldObj.rand;
     }
 
+    public void doNotNotchExplosion()
+    {
+        this.worldObj.playSoundEffect(this.explosionX, this.explosionY, this.explosionZ, "random.explode", 4.0F, (1.0F + (this.worldObj.rand.nextFloat() - this.worldObj.rand.nextFloat()) * 0.2F) * 0.7F);
+
+        if (this.explosionSize >= 2.0F && this.isSmoking)
+        {
+            this.worldObj.spawnParticle("hugeexplosion", this.explosionX, this.explosionY, this.explosionZ, 1.0D, 0.0D, 0.0D);
+        }
+        else
+        {
+            this.worldObj.spawnParticle("largeexplode", this.explosionX, this.explosionY, this.explosionZ, 1.0D, 0.0D, 0.0D);
+        }
+
+        int minExplodeX = (int) (this.explosionX - this.explosionSize);
+        int maxExplodeX = (int) Math.ceil(this.explosionX + this.explosionSize);
+        int minExplodeY = (int) (this.explosionY - this.explosionSize);
+        int maxExplodeY = (int) Math.ceil(this.explosionY + this.explosionSize);
+        int minExplodeZ = (int) (this.explosionZ - this.explosionSize);
+        int maxExplodeZ = (int) Math.ceil(this.explosionZ + this.explosionSize);
+
+        // A collision will be considered by the center point of each cube.
+        for(double i = minExplodeX + 0.5; i <= maxExplodeX; ++i) {
+            for(double j = minExplodeY + 0.5; j <= maxExplodeY; ++j) {
+                for(double k = minExplodeZ + 0.5; k <= maxExplodeZ; ++k) {
+                    double distance = Math.sqrt((this.explosionX - i) * (this.explosionX - i) +
+                            (this.explosionY - j) * (this.explosionY - j) +
+                            (this.explosionZ - k) * (this.explosionZ - k));
+
+                    if(distance <= this.explosionSize) {
+                        int int_i = (int) i, int_j = (int) j, int_k = (int) k;
+                        int blockId = this.worldObj.getBlockId(int_i, int_j, int_k);
+
+                        if (blockId > 0) {
+                            Block block = Block.blocksList[blockId];
+
+                            if (block.canDropFromExplosion(this)) {
+                                // Right here is why I even started making this mod in the first place.  I just wanted my explosions to leave the stuff behind!
+                                // That's it!
+                                block.dropBlockAsItemWithChance(this.worldObj, int_i, int_j, int_k, this.worldObj.getBlockMetadata(int_i, int_j, int_k), 1.0F, 0);
+                            }
+
+                            block.onBlockExploded(this.worldObj, int_i, int_j, int_k, this);
+                        }
+                    }
+                }
+            }
+        }
+    }
+
     /**
      * Does the first part of the explosion (destroy blocks)
      */
@@ -187,6 +236,8 @@ public class MiningTNTExplosion extends Explosion
         int k;
         int l;
 
+        // this.isSmoking is supposed to just determine if we should spawn smoke particles, but it looks like all the
+        // beefy explosion code goes underneath it too.
         if (this.isSmoking)
         {
             iterator = this.affectedBlockPositions.iterator();
@@ -239,6 +290,7 @@ public class MiningTNTExplosion extends Explosion
             }
         }
 
+        // Set fire to blocks around explosion
         if (this.isFlaming)
         {
             iterator = this.affectedBlockPositions.iterator();
@@ -259,17 +311,4 @@ public class MiningTNTExplosion extends Explosion
             }
         }
     }
-
-//    public Map func_77277_b()
-//    {
-//        return this.field_77288_k;
-//    }
-//
-//    /**
-//     * Returns either the entity that placed the explosive block, the entity that caused the explosion or null.
-//     */
-//    public EntityLivingBase getExplosivePlacedBy()
-//    {
-//        return this.exploder == null ? null : (this.exploder instanceof EntityTNTPrimed ? ((EntityTNTPrimed)this.exploder).getTntPlacedBy() : (this.exploder instanceof EntityLivingBase ? (EntityLivingBase)this.exploder : null));
-//    }
 }
